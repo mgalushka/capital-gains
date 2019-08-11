@@ -4,5 +4,11 @@
   "scripts": {
     "build": "babel src/ -d lib/",
     "prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "flow-bin": "^0.105.1"
+  },
+  "scripts": {
+    "flow": "flow"
   }
 }
