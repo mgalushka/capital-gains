@@ -1,0 +1,8 @@
+{
+  "name": "capital-gains",
+  "main": "lib/capitalgains.js",
+  "scripts": {
+    "build": "babel src/ -d lib/",
+    "prepublish": "npm run build"
+  }
+}
