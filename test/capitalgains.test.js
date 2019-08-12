@@ -1,5 +1,7 @@
 const gains = require('../src/capitalgains');
 
 test('testing gains amount', () => {
-  expect(gains().amount).toBe(100);
+  const g = gains();
+  expect(g.amount).toBe(100);
+  expect(g.currency).toBe("GBP");
 });
