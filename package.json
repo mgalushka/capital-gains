@@ -3,11 +3,13 @@
   "main": "lib/capitalgains.js",
   "scripts": {
     "flow": "flow",
-    "build": "babel src -d lib"
+    "build": "babel src -d lib",
+    "test": "jest"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "flow-bin": "^0.105.1"
+    "flow-bin": "^0.105.1",
+    "jest": "^24.8.0"
   }
 }

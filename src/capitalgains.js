@@ -13,3 +13,5 @@ const gains = () => {
     currency: 'GBP',
   }
 }
+
+module.exports = gains;
