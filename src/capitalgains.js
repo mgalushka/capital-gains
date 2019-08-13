@@ -9,13 +9,6 @@ type Transaction = {
   type: TransactionType,
 };
 
-// const gains = () => {
-//   return {
-//     amount: 100,
-//     currency: 'GBP',
-//   }
-// }
-
 class Gains {
   transactions: Array<TransactionType>;
   add(transaction: TransactionType): Gains {
