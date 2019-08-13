@@ -11,5 +11,10 @@
     "@babel/core": "^7.5.5",
     "flow-bin": "^0.105.1",
     "jest": "^24.8.0"
+  },
+  "dependencies": {
+    "@babel/plugin-proposal-export-default-from": "^7.5.2",
+    "babel-jest": "^24.8.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0"
   }
 }

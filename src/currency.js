@@ -1,3 +1,3 @@
 // @flow
 
-type currency = "USD" | "GBP";
+export type Currency = "USD" | "GBP";
