@@ -1,13 +1,18 @@
 const gains = require("../lib/capitalgains");
-// import gains from "../lib/capitalgains"
-
-test('testing gains amount', () => {
-  // const g = gains();
-  // expect(g.amount).toBe(100);
-  // expect(g.currency).toBe("GBP");
-});
 
 test('basic accumulation', () => {
   const g = gains();
-  // g.add();
+  g.add({
+    amount: 10,
+    currency: "USD",
+    type: "SELL",
+  });
+  expect(g.transactions.length).toBe(1);
+
+  g.add({
+    amount: 15,
+    currency: "GBP",
+    type: "BUY",
+  });
+  expect(g.transactions.length).toBe(2);
 });
