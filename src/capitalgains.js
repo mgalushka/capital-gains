@@ -12,7 +12,7 @@ type Transaction = {
 class Gains {
   transactions: Array<TransactionType> = new Array();
 
-  // accumulate transaction for later computation
+  // accumulate transactions for later computation
   add(transaction: TransactionType): Gains {
     this.transactions.push(transaction);
     return this;
