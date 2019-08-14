@@ -36,6 +36,7 @@ class Gains {
   count(): number {
     return this.transactions.length;
   }
+
 };
 
 function gains (): Gains {
