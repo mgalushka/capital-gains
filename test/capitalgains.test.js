@@ -1,7 +1,7 @@
 const gains = require("../lib/capitalgains");
 
 test('basic accumulation', () => {
-  const g = gains();
+  const g = gains.new_gains();
   g.add({
     amount: 10,
     currency: "USD",
@@ -19,7 +19,7 @@ test('basic accumulation', () => {
 });
 
 test('basic balance', () => {
-  const g = gains();
+  const g = gains.new_gains();
   g.add({
     amount: 10,
     currency: "USD",
