@@ -9,11 +9,16 @@ test('basic accumulation', () => {
   });
   expect(g.transactions.length).toBe(1);
 
-  g.add({
+  const tr: gains.Transaction = {
+    idex: 'AAPL',
     amount: 15,
+    price: 1,
     currency: "GBP",
-    type: "BUY",
-  });
+    direction: "BUY",
+    date: '2019-07-11',
+  }
+
+  g.add(tr);
   expect(g.transactions.length).toBe(2);
   expect(g.count()).toBe(2);
 });
@@ -25,7 +30,7 @@ test('basic balance', () => {
     amount: 10,
     price: 12, // cost = 10 * 12 = 120
     currency: "USD",
-    type: "SELL",
+    direction: "SELL",
   });
   expect(g.transactions.length).toBe(1);
 
@@ -34,7 +39,7 @@ test('basic balance', () => {
     amount: 15,
     price: 3, // cost = 15 * 3 = 45
     currency: "USD",
-    type: "BUY",
+    direction: "BUY",
   });
 
   // js array reduce example: https://jsfiddle.net/pym47ung/1/
@@ -48,7 +53,7 @@ test('new format', () => {
     price: 55.5,
     amount: 3,
     currency: 'USD',
-    type: 'BUY',
+    direction: 'BUY',
   });
   expect(g.transactions.length).toBe(1);
 

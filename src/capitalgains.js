@@ -1,21 +1,48 @@
 // @flow
+const moment = require("moment");
 import type { Currency } from "./currency"
 
-type TransactionType = "BUY" | "SELL";
+type TransactionDirection = "BUY" | "SELL";
 
-type Transaction = {
+type TransactionType = {
   index: string,
   price: number,
   amount: number,
   currency: Currency,
-  type: TransactionType,
+  type: TransactionDirection,
+  date: string,
 };
+
+class Transaction {
+  index: string;
+  price: number;
+  amount: number;
+  currency: Currency;
+  direction: TransactionDirection;
+  date: string;
+
+  constructor(
+    index: string,
+    price: number,
+    amount: number,
+    currency: Currency,
+    direction: TransactionDirection,
+    date: string,
+  ) {
+    this.index = index;
+    this.price = price;
+    this.amount = amount;
+    this.currency = currency;
+    this.direction = direction;
+    this.date = date;
+  }
+}
 
 class Portfolio {
   transactions: Array<Transaction> = [];
 
   // accumulate transactions for later computation
-  add(transaction: Transaction): Gains {
+  add(transaction: Transaction): Portfolio {
     this.transactions.push(transaction);
     return this;
   };
@@ -25,7 +52,7 @@ class Portfolio {
     return this.transactions.reduce(
       (accumulator, trx) => {
         const cost = trx.price * trx.amount;
-        if (trx.type === "BUY") {
+        if (trx.direction === "BUY") {
           return accumulator + cost;
         } else {
           return accumulator - cost;
@@ -45,6 +72,20 @@ function new_portfolio(): Portfolio {
   return new Portfolio();
 }
 
+function new_transaction(
+  index: string,
+  price: number,
+  amount: number,
+  currency: Currency,
+  direction: TransactionDirection,
+  date: string,
+): Transaction {
+  return new Transaction(index, price, amount, currency, direction, date);
+}
+
 module.exports = {
+  Portfolio,
+  Transaction,
   new_portfolio,
+  new_transaction,
 }
