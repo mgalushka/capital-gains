@@ -2,11 +2,9 @@ const gains = require("../src/capitalgains");
 
 test('basic accumulation', () => {
   const g = gains.new_portfolio();
-  g.add({
-    amount: 10,
-    currency: "USD",
-    type: "SELL",
-  });
+  g.add(gains.new_transaction(
+    'MSFT', 1, 17.9, 'USD', 'BUY', '2019-07-12',
+  ));
   expect(g.transactions.length).toBe(1);
 
   const tr: gains.Transaction = {
@@ -17,8 +15,8 @@ test('basic accumulation', () => {
     direction: "BUY",
     date: '2019-07-11',
   }
-
   g.add(tr);
+
   expect(g.transactions.length).toBe(2);
   expect(g.count()).toBe(2);
 });
