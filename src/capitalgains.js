@@ -11,7 +11,7 @@ type Transaction = {
   type: TransactionType,
 };
 
-class Gains {
+class Portfolio {
   transactions: Array<Transaction> = [];
 
   // accumulate transactions for later computation
@@ -41,11 +41,10 @@ class Gains {
   }
 };
 
-function new_gains(): Gains {
-  return new Gains();
+function new_portfolio(): Portfolio {
+  return new Portfolio();
 }
 
 module.exports = {
-  new_gains,
-  Gains,
+  new_portfolio,
 }

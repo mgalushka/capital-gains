@@ -1,7 +1,7 @@
 const gains = require("../src/capitalgains");
 
 test('basic accumulation', () => {
-  const g = gains.new_gains();
+  const g = gains.new_portfolio();
   g.add({
     amount: 10,
     currency: "USD",
@@ -19,7 +19,7 @@ test('basic accumulation', () => {
 });
 
 test('basic balance', () => {
-  const g = gains.new_gains();
+  const g = gains.new_portfolio();
   g.add({
     index: 'MSFT',
     amount: 10,
@@ -42,7 +42,7 @@ test('basic balance', () => {
 });
 
 test('new format', () => {
-  const g = gains.new_gains();
+  const g = gains.new_portfolio();
   g.add({
     index: 'MSFT',
     price: 55.5,
