@@ -7,7 +7,6 @@ type Transaction = {
   index: string,
   price: number,
   amount: number,
-  cost: ?number,
   currency: Currency,
   type: TransactionType,
 };
@@ -25,10 +24,11 @@ class Gains {
   balance(): number {
     return this.transactions.reduce(
       (accumulator, trx) => {
+        const cost = trx.price * trx.amount;
         if (trx.type === "BUY") {
-          return accumulator + trx.amount;
+          return accumulator + cost;
         } else {
-          return accumulator - trx.amount;
+          return accumulator - cost;
         }
       },
       0,
