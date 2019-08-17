@@ -23,7 +23,7 @@ test('basic balance', () => {
   g.add({
     index: 'MSFT',
     amount: 10,
-    price: 12,
+    price: 12, // cost = 10 * 12 = 120
     currency: "USD",
     type: "SELL",
   });
@@ -32,7 +32,7 @@ test('basic balance', () => {
   g.add({
     index: 'MSFT',
     amount: 15,
-    price: 3,
+    price: 3, // cost = 15 * 3 = 45
     currency: "USD",
     type: "BUY",
   });
