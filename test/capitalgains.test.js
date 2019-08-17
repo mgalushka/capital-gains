@@ -46,15 +46,15 @@ test('basic balance', () => {
 
 test('new format', () => {
   const g = gains.new_portfolio();
-  g.add({
+  const tr: gains.Transaction = {
     index: 'MSFT',
     price: 55.5,
     amount: 3,
     currency: 'USD',
     direction: 'BUY',
-  });
+    date: '2019-07-11',
+  }
+  g.add(tr);
   expect(g.transactions.length).toBe(1);
-
-  // js array reduce example: https://jsfiddle.net/pym47ung/1/
   expect(g.balance()).toBe(55.5 * 3);
 });
