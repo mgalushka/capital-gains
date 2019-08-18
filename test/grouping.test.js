@@ -13,7 +13,7 @@ createTestPortfolio = () => {
 }
 
 test('basic grouping', () => {
-  expect(grouping.group(createTestPortfolio())).toBeNull();
+  expect(grouping.group(createTestPortfolio())).toEqual([]);
 });
 
 test('testing indexes', () => {

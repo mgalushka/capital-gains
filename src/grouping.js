@@ -59,11 +59,11 @@ class TransactionGroupStrategy {
     console.log(this.indexByStock);
   }
 
-  groupped(): ?TransactionGroup {
-    return null;
+  groupped(): TransactionGroup[] {
+    return [];
   }
 
-  groupSameDay(): Array<TransactionGroup> {
+  groupSameDay(): TransactionGroup[] {
     // day -> Array
     let sameDayGroups = new Map();
     for (let i = 0; i < self.transactions.length; i++) {
@@ -72,12 +72,12 @@ class TransactionGroupStrategy {
     return [];  // temporarily
   }
 
-  ungroupped(): ?TransactionGroup {
-    return null;
+  ungroupped(): TransactionGroup[] {
+    return [];
   }
 }
 
-function group(portfolio: Portfolio): ?TransactionGroup {
+function group(portfolio: Portfolio): TransactionGroup[] {
   const group_strategy = new TransactionGroupStrategy(portfolio);
   return group_strategy.groupped();
 }
