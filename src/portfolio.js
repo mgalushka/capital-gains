@@ -70,11 +70,11 @@ class Portfolio {
   // pairings(): Array<Pairing>
 };
 
-function new_portfolio(): Portfolio {
+function newPortfolio(): Portfolio {
   return new Portfolio();
 }
 
-function new_transaction(
+function newTransaction(
   index: string,
   price: number,
   amount: number,
@@ -88,6 +88,6 @@ function new_transaction(
 module.exports = {
   Portfolio,
   Transaction,
-  new_portfolio,
-  new_transaction,
+  newTransaction,
+  newPortfolio,
 }

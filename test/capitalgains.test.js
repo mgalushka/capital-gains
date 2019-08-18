@@ -1,8 +1,8 @@
-const gains = require("../src/portfolio");
+const portfolio = require("../src/portfolio");
 
 test('basic accumulation', () => {
-  const g = gains.new_portfolio();
-  g.add(gains.new_transaction(
+  const g = portfolio.newPortfolio();
+  g.add(portfolio.newTransaction(
     'MSFT', 1, 17.9, 'USD', 'BUY', '2019-07-12',
   ));
   expect(g.transactions.length).toBe(1);
@@ -22,7 +22,7 @@ test('basic accumulation', () => {
 });
 
 test('basic balance', () => {
-  const g = gains.new_portfolio();
+  const g = portfolio.newPortfolio();
   g.add({
     index: 'MSFT',
     amount: 10,
@@ -45,8 +45,8 @@ test('basic balance', () => {
 });
 
 test('new format', () => {
-  const g = gains.new_portfolio();
-  const tr: gains.Transaction = {
+  const g = portfolio.newPortfolio();
+  const tr: portfolio.Transaction = {
     index: 'MSFT',
     price: 55.5,
     amount: 3,
