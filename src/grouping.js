@@ -5,16 +5,16 @@ import type { Portfolio, Transaction } from "./portfolio"
 type TransactionGroupCalculationType = "SAME_DAY" | "30_DAYS" | "HOLDING";
 
 type TransactionGroup = {
-  transactions: Array<Transaction>,
+  transactions: Transaction[],
   type: TransactionGroupCalculationType,
 }
 
 // this is implementation for UK matching rules strategy:
 // https://www.gov.uk/government/publications/shares-and-capital-gains-tax-hs284-self-assessment-helpsheet/shares-and-capital-gains-tax-hs284-self-assessment-helpsheet
 class TransactionGroupStrategy {
-  transactions: Array<Transaction> = [];
-  indexByDate: Map<string, Array<Transaction>> = new Map();
-  indexByStock: Map<string, Array<Transaction>> = new Map();
+  transactions: Transaction[] = [];
+  indexByDate: Map<string, Transaction[]> = new Map();
+  indexByStock: Map<string, Transaction[]> = new Map();
 
   constructor(portfolio: Portfolio) {
     this.transactions = portfolio.transactions;
@@ -22,7 +22,7 @@ class TransactionGroupStrategy {
   }
 
   createIndexes(): void {
-    let index_by_date_map: Map<string, Array<Transaction>> = new Map();
+    let index_by_date_map: Map<string, Transaction[]> = new Map();
     this.indexByDate = this.transactions.reduce(
       (index, trx) => {
         if (!index.has(trx.date)) {
@@ -40,7 +40,7 @@ class TransactionGroupStrategy {
     console.log('Index by date');
     console.log(this.indexByDate);
 
-    let index_by_stock_map: Map<string, Array<Transaction>> = new Map();
+    let index_by_stock_map: Map<string, Transaction[]> = new Map();
     this.indexByStock = this.transactions.reduce(
       (index, trx) => {
         if (!index.has(trx.index)) {

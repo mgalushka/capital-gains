@@ -39,7 +39,7 @@ class Transaction {
 }
 
 class Portfolio {
-  transactions: Array<Transaction> = [];
+  transactions: Transaction[] = [];
 
   // accumulate transactions for later computation
   add(transaction: Transaction): Portfolio {
