@@ -1,4 +1,4 @@
-const gains = require("../src/capitalgains");
+const gains = require("../src/portfolio");
 
 test('basic accumulation', () => {
   const g = gains.new_portfolio();

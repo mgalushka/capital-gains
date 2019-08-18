@@ -66,6 +66,8 @@ class Portfolio {
   count(): number {
     return this.transactions.length;
   }
+
+  // pairings(): Array<Pairing>
 };
 
 function new_portfolio(): Portfolio {
