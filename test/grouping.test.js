@@ -11,7 +11,4 @@ test('basic grouping', () => {
   ));
 
   expect(grouping.group(p)).toBeNull();
-
-
-
 });
