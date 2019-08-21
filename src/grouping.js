@@ -22,39 +22,11 @@ class TransactionGroupStrategy {
   }
 
   createIndexes(): void {
-    let index_by_date_map: Map<string, Transaction[]> = new Map();
-    this.indexByDate = this.transactions.reduce(
-      (index, trx) => {
-        if (!index.has(trx.date)) {
-          const empty: Transaction[] = [];
-          index.set(trx.date, empty);
-        }
-        let arr = index.get(trx.date);
-        if (arr !== undefined) {
-            arr.push(trx);
-        }
-        return index;
-      },
-      index_by_date_map,
-    );
+    this.indexByDate = this.mapByDate(this.transactions);
     console.log('Index by date');
     console.log(this.indexByDate);
 
-    let index_by_stock_map: Map<string, Transaction[]> = new Map();
-    this.indexByStock = this.transactions.reduce(
-      (index, trx) => {
-        if (!index.has(trx.index)) {
-          const empty: Transaction[] = [];
-          index.set(trx.index, empty);
-        }
-        let arr = index.get(trx.index);
-        if (arr !== undefined) {
-            arr.push(trx);
-        }
-        return index;
-      },
-      index_by_stock_map,
-    );
+    this.indexByStock = this.mapByIndex(this.transactions);
     console.log('Index by stock');
     console.log(this.indexByStock);
   }
