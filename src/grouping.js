@@ -65,11 +65,47 @@ class TransactionGroupStrategy {
 
   groupSameDay(): TransactionGroup[] {
     // day -> Array
-    let sameDayGroups = new Map();
-    for (let i = 0; i < self.transactions.length; i++) {
+    let sameDayGroups: Map<string, Transaction[]> = new Map();
+    for (let i = 0; i < self.indexByDate.length; i++) {
 
     }
     return [];  // temporarily
+  }
+
+  mapByIndex(transactions: Transaction[]): Map<string, Transaction[]> {
+    let index_by_index_map: Map<string, Transaction[]> = new Map();
+    return transactions.reduce(
+      (index, trx) => {
+        if (!index.has(trx.index)) {
+          const empty: Transaction[] = [];
+          index.set(trx.index, empty);
+        }
+        let arr = index.get(trx.index);
+        if (arr !== undefined) {
+            arr.push(trx);
+        }
+        return index;
+      },
+      index_by_index_map,
+    );
+  }
+
+  mapByDate(transactions: Transaction[]): Map<string, Transaction[]> {
+    let index_by_date_map: Map<string, Transaction[]> = new Map();
+    return transactions.reduce(
+      (index, trx) => {
+        if (!index.has(trx.date)) {
+          const empty: Transaction[] = [];
+          index.set(trx.date, empty);
+        }
+        let arr = index.get(trx.date);
+        if (arr !== undefined) {
+            arr.push(trx);
+        }
+        return index;
+      },
+      index_by_date_map,
+    );
   }
 
   ungroupped(): TransactionGroup[] {
