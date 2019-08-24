@@ -23,12 +23,7 @@ class TransactionGroupStrategy {
 
   createIndexes(): void {
     this.indexByDate = this.mapByDate(this.transactions);
-    console.log('Index by date');
-    console.log(this.indexByDate);
-
     this.indexByStock = this.mapByIndex(this.transactions);
-    console.log('Index by stock');
-    console.log(this.indexByStock);
   }
 
   groupped(): TransactionGroup[] {
@@ -36,11 +31,25 @@ class TransactionGroupStrategy {
   }
 
   groupSameDay(): TransactionGroup[] {
-    // day -> Array
-    let sameDayGroups: Map<string, Transaction[]> = new Map();
-    for (let i = 0; i < self.indexByDate.length; i++) {
-
+    // day -> index -> Array
+    let sameDayGroups: Map<string, Map<string, Transaction[]>> = new Map();
+    console.log(this.indexByDate);
+    let it = this.indexByDate.entries();
+    let entry = it.next();
+    while (!entry.done) {
+      const k = entry.value[0];
+      const v = entry.value[1];
+      console.log('key=' + k + '; value=' + v);
+      if (v.length <= 1) {
+        entry = it.next();
+        continue;
+      }
+      const stockGroup = this.mapByIndex(v);
+      console.log(stockGroup);
+      sameDayGroups.set(k, stockGroup);
+      entry = it.next();
     }
+    console.log(sameDayGroups);
     return [];  // temporarily
   }
 
