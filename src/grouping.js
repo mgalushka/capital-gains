@@ -4,9 +4,15 @@ import type { Portfolio, Transaction } from "./portfolio"
 
 type TransactionGroupCalculationType = "SAME_DAY" | "30_DAYS" | "HOLDING";
 
+type GroupMetadata = {
+  date: string,
+}
+
 type TransactionGroup = {
+  index: string,
   transactions: Transaction[],
   type: TransactionGroupCalculationType,
+  groupMetadata: ?GroupMetadata,
 }
 
 // this is implementation for UK matching rules strategy:
@@ -31,26 +37,36 @@ class TransactionGroupStrategy {
   }
 
   groupSameDay(): TransactionGroup[] {
+    let groups: TransactionGroup[] = [];
     // day -> index -> Array
     let sameDayGroups: Map<string, Map<string, Transaction[]>> = new Map();
     console.log(this.indexByDate);
     let it = this.indexByDate.entries();
     let entry = it.next();
     while (!entry.done) {
-      const k = entry.value[0];
+      const date = entry.value[0];
       const v = entry.value[1];
-      console.log('key=' + k + '; value=' + v);
+      console.log('key=' + date + '; value=' + v);
       if (v.length <= 1) {
         entry = it.next();
         continue;
       }
       const stockGroup = this.mapByIndex(v);
       console.log(stockGroup);
-      sameDayGroups.set(k, stockGroup);
+      sameDayGroups.set(date, stockGroup);
+
+      stockGroup.forEach((index, transactionsArray, map) => {
+        groups.push({
+          index: index,
+          transactions: transactionsArray,
+          type: "SAME_DAY",
+          groupMetadata: {date},
+        });
+      });
       entry = it.next();
     }
     console.log(sameDayGroups);
-    return [];  // temporarily
+    return groups;  // temporarily
   }
 
   mapByIndex(transactions: Transaction[]): Map<string, Transaction[]> {

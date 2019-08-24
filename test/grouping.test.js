@@ -28,5 +28,5 @@ test('testing indexes', () => {
 
 test('same day groups', () => {
   const strategy = new grouping.TransactionGroupStrategy(createTestPortfolio());
-  expect(strategy.groupSameDay()).toEqual([]);
+  expect(strategy.groupSameDay().length).toBe(1);
 });
