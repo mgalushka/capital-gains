@@ -28,5 +28,32 @@ test('testing indexes', () => {
 
 test('same day groups', () => {
   const strategy = new grouping.TransactionGroupStrategy(createTestPortfolio());
-  expect(strategy.groupSameDay().length).toBe(1);
+  const sameDay = strategy.groupSameDay();
+  expect(sameDay.length).toBe(1);
+
+  const trx = sameDay[0];
+  expect(trx).toEqual({
+    index: 'MSFT',
+    transactions: [
+      {
+          amount: 17.9,
+          currency: "USD",
+          date: "2019-07-12",
+          direction: "BUY",
+          index: "MSFT",
+          price: 1,
+        },
+        {
+          amount: 18,
+          currency: "USD",
+          date: "2019-07-12",
+          direction: "SELL",
+          index: "MSFT",
+          price: 1,
+        },
+    ],
+    type: "SAME_DAY",
+    groupMetadata: {date: "2019-07-12"},
+  });
+  expect(trx.index).toBe('MSFT');
 });

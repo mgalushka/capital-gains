@@ -39,23 +39,17 @@ class TransactionGroupStrategy {
   groupSameDay(): TransactionGroup[] {
     let groups: TransactionGroup[] = [];
     // day -> index -> Array
-    let sameDayGroups: Map<string, Map<string, Transaction[]>> = new Map();
-    console.log(this.indexByDate);
     let it = this.indexByDate.entries();
     let entry = it.next();
     while (!entry.done) {
       const date = entry.value[0];
-      const v = entry.value[1];
-      console.log('key=' + date + '; value=' + v);
-      if (v.length <= 1) {
+      const trans: Transaction[] = entry.value[1];
+      if (trans.length <= 1) {
         entry = it.next();
         continue;
       }
-      const stockGroup = this.mapByIndex(v);
-      console.log(stockGroup);
-      sameDayGroups.set(date, stockGroup);
-
-      stockGroup.forEach((index, transactionsArray, map) => {
+      const stockGroup: Map<string, Transaction[]> = this.mapByIndex(trans);
+      stockGroup.forEach((transactionsArray, index, map) => {
         groups.push({
           index: index,
           transactions: transactionsArray,
@@ -65,8 +59,7 @@ class TransactionGroupStrategy {
       });
       entry = it.next();
     }
-    console.log(sameDayGroups);
-    return groups;  // temporarily
+    return groups;
   }
 
   mapByIndex(transactions: Transaction[]): Map<string, Transaction[]> {
