@@ -78,7 +78,13 @@ class TransactionGroupStrategy {
     // Those will be matched as bed and breakfasting rule.
 
     // To compute this we first sort indexByDate in descending order
-
+    let sorted = new Map([...this.indexByDate.entries()].sort((a,b) => {
+        if (a[0] === b[0]) return 0;
+        if (a[0] < b[0]) return 1;
+        else return -1;
+      }
+    ));
+    console.log(sorted);
 
     return groups;
   }

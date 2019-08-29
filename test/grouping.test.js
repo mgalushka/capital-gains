@@ -57,3 +57,9 @@ test('same day groups', () => {
   });
   expect(trx.index).toBe('MSFT');
 });
+
+test('test bed and breakfast grouping', () => {
+  const strategy = new grouping.TransactionGroupStrategy(createTestPortfolio());
+  const bnb = strategy.groupBedAndBreakfasting();
+  expect(bnb.length).toBe(0);
+});
