@@ -72,7 +72,8 @@ class TransactionGroupStrategy {
   }
 
   groupBedAndBreakfasting(): TransactionGroup[] {
-    let groups: TransactionGroup[] = [];
+    let matchedGroups: TransactionGroup[] = [];
+    let unmatchedGroups: TransactionGroup[] = [];
     // For every SELL transaction, we need to find
     // if there were any buy transactions in the last 30 days for same stock
     // Those will be matched as bed and breakfasting rule.
@@ -84,9 +85,76 @@ class TransactionGroupStrategy {
         else return -1;
       }
     ));
-    console.log(sorted);
+    // console.log(sorted);
 
-    return groups;
+    this.indexByStock.forEach((transactions, stock, map) => {
+      let sorted = transactions.sort((a, b) => {
+        const am = moment(a.date, 'YYYY-MM-DD');
+        const bm = moment(b.date, 'YYYY-MM-DD')
+        if (moment(am).isBefore(bm)) return 1;
+        if (moment(am).isAfter(bm)) return -1;
+        return 0;
+      });
+      console.log(sorted);
+
+      // TODO: add structure to track matching and unmatching method state
+
+      for (let index = 0; index < sorted.length; index++) {
+        const current = sorted[index];
+        let currentAmount = current.amount;
+        console.log(current);
+
+        // skip all BUY transactions as non relevant
+        if (current.direction === 'BUY') {
+          // TODO: add to unmatched transactions
+          continue;
+        }
+
+        // if last transaction - nothing to match against
+        if (index === sorted.length - 1) {
+          // TODO: add to unmatched transactions
+          break;
+        }
+        const sellDate = moment(current.date, 'YYYY-MM-DD');
+        for (let internal = index+1; internal < sorted.length; internal++) {
+          const compare = sorted[internal];
+          const compareDate = moment(compare.date, 'YYYY-MM-DD');
+
+          // for bed and breakfasting rule to apply -
+          // there should be at least 1 day difference between transactions
+          if (sellDate.isSame(compareDate, 'days')) {
+            continue;
+          }
+
+          // bed and breakfasting rule is valid only for 30 days
+          if (sellDate.diff(compareDate, 'days') > 30) {
+            break;
+          }
+
+          // For bed and breakfasting rule SELL should happen after BUY
+          // of same stock transaction withing 30 days of it
+          if (compare.direction === 'BUY') {
+            // amount to match against breakfasting rule
+            const matchedAmount = min(current.amount, compare.amount);
+            currentAmount -= matchedAmount;
+          }
+
+          // there is no more amount to match
+          if (currentAmount === 0) {
+            break
+          }
+        }
+
+        // logging unmatched amount
+        if (currentAmount > 0) {
+          unmatchedGroups.push(new Transaction());
+        }
+      }
+    });
+
+
+
+    return matchedGroups;
   }
 
   mapByIndex(transactions: InternalTransaction[]): Map<string, InternalTransaction[]> {
