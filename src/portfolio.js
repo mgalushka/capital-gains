@@ -36,6 +36,10 @@ class Transaction {
     this.direction = direction;
     this.date = date;
   }
+
+  clone(): Transaction {
+    return new Transaction(this.index, this.price, this.amount, this.currency, this.direction, this.date);
+  }
 }
 
 class Portfolio {

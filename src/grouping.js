@@ -45,6 +45,17 @@ class TransactionGroupStrategy {
     return [];
   }
 
+  // Algorithm:
+  // Crete transaction pool by cloning list of transactions passed
+  // Order transactions in ascending order by date
+  // on every transaction compute:
+  // if BUY - match against: 1. same day; 2. 30 days rule; 3 - add to holding
+  //
+  // remove matched transactions from transaction pool
+  groupX(): TransactionGroup[] {
+    return [];
+  }
+
   groupSameDay(): TransactionGroup[] {
     let groups: TransactionGroup[] = [];
     // day -> index -> Array
@@ -100,8 +111,14 @@ class TransactionGroupStrategy {
       // TODO: add structure to track matching and unmatching method state
 
       for (let index = 0; index < sorted.length; index++) {
-        const current = sorted[index];
+        const current: InternalTransaction = sorted[index];
+        if (current === undefined || current.amount === undefined) {
+          continue;
+        }
         let currentAmount = current.amount;
+        if (currentAmount === undefined) {
+          continue;
+        }
         console.log(current);
 
         // skip all BUY transactions as non relevant
@@ -135,19 +152,19 @@ class TransactionGroupStrategy {
           // of same stock transaction withing 30 days of it
           if (compare.direction === 'BUY') {
             // amount to match against breakfasting rule
-            const matchedAmount = min(current.amount, compare.amount);
+            const matchedAmount = Math.min(current.amount, compare.amount);
             currentAmount -= matchedAmount;
           }
 
           // there is no more amount to match
-          if (currentAmount === 0) {
+          if (currentAmount !== undefined && currentAmount === 0) {
             break
           }
         }
 
         // logging unmatched amount
         if (currentAmount > 0) {
-          unmatchedGroups.push(new Transaction());
+          // unmatchedGroups.push(new Transaction());
         }
       }
     });

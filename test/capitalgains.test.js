@@ -58,3 +58,14 @@ test('new format', () => {
   expect(g.transactions.length).toBe(1);
   expect(g.balance()).toBe(55.5 * 3);
 });
+
+test('clone', () => {
+  const g = portfolio.newPortfolio();
+  const tr: portfolio.Transaction =
+    portfolio.newTransaction('MSFT', 1, 17.9, 'USD', 'SELL', '2019-07-30')
+  g.add(tr);
+  const tr2 = tr.clone();
+  tr2.index = 'APPL';
+
+  expect(tr2.index).not.toBe(tr.index);
+});
