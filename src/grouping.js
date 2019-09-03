@@ -15,24 +15,21 @@ type TransactionGroup = {
   groupMetadata: ?GroupMetadata,
 }
 
-type InternalTransaction = {
-  ...Transaction,
-  tracked: boolean,
+type Holding = {
+  index: string,
+  amount: number,
+  cost: number,
 }
 
 // this is implementation for UK matching rules strategy:
 // https://www.gov.uk/government/publications/shares-and-capital-gains-tax-hs284-self-assessment-helpsheet/shares-and-capital-gains-tax-hs284-self-assessment-helpsheet
 class TransactionGroupStrategy {
-  transactions: InternalTransaction[] = [];
-  indexByDate: Map<string, InternalTransaction[]> = new Map();
-  indexByStock: Map<string, InternalTransaction[]> = new Map();
+  transactions: Transaction[] = [];
+  indexByDate: Map<string, Transaction[]> = new Map();
+  indexByStock: Map<string, Transaction[]> = new Map();
 
   constructor(portfolio: Portfolio) {
-    this.transactions = portfolio.transactions.map(tr => {
-      var joined: InternalTransaction = {...tr, tracked: false};
-      joined.tracked = false;
-      return (joined: InternalTransaction);
-    });
+    this.transactions = portfolio.transactions;
     this.createIndexes();
   }
 
@@ -53,6 +50,15 @@ class TransactionGroupStrategy {
   //
   // remove matched transactions from transaction pool
   groupX(): TransactionGroup[] {
+    let tracked = this.transactions.map(tr => tr.clone()).sort((a, b) => {
+      const am = moment(a.date, 'YYYY-MM-DD');
+      const bm = moment(b.date, 'YYYY-MM-DD')
+      if (moment(am).isBefore(bm)) return 1;
+      if (moment(am).isAfter(bm)) return -1;
+      return 0;
+    });
+    var holdings: Map<string, Holding> = new Map();
+    console.log(tracked);
     return [];
   }
 
@@ -63,16 +69,16 @@ class TransactionGroupStrategy {
     let entry = it.next();
     while (!entry.done) {
       const date = entry.value[0];
-      const trans: InternalTransaction[] = entry.value[1];
+      const trans: Transaction[] = entry.value[1];
       if (trans.length <= 1) {
         entry = it.next();
         continue;
       }
-      const stockGroup: Map<string, InternalTransaction[]> = this.mapByIndex(trans);
+      const stockGroup: Map<string, Transaction[]> = this.mapByIndex(trans);
       stockGroup.forEach((transactionsArray, index, map) => {
         groups.push({
           index: index,
-          transactions: this.reduce(transactionsArray),
+          transactions: transactionsArray,
           type: "SAME_DAY",
           groupMetadata: {date},
         });
@@ -106,12 +112,12 @@ class TransactionGroupStrategy {
         if (moment(am).isAfter(bm)) return -1;
         return 0;
       });
-      console.log(sorted);
+      // console.log(sorted);
 
       // TODO: add structure to track matching and unmatching method state
 
       for (let index = 0; index < sorted.length; index++) {
-        const current: InternalTransaction = sorted[index];
+        const current: Transaction = sorted[index];
         if (current === undefined || current.amount === undefined) {
           continue;
         }
@@ -119,7 +125,7 @@ class TransactionGroupStrategy {
         if (currentAmount === undefined) {
           continue;
         }
-        console.log(current);
+        // console.log(current);
 
         // skip all BUY transactions as non relevant
         if (current.direction === 'BUY') {
@@ -174,8 +180,8 @@ class TransactionGroupStrategy {
     return matchedGroups;
   }
 
-  mapByIndex(transactions: InternalTransaction[]): Map<string, InternalTransaction[]> {
-    let index_by_index_map: Map<string, InternalTransaction[]> = new Map();
+  mapByIndex(transactions: Transaction[]): Map<string, Transaction[]> {
+    let index_by_index_map: Map<string, Transaction[]> = new Map();
     return transactions.reduce(
       (index, trx) => {
         if (trx === undefined || trx.index === undefined) {
@@ -183,7 +189,7 @@ class TransactionGroupStrategy {
         }
         const indexValue = trx.index;
         if (!index.has(indexValue)) {
-          const empty: InternalTransaction[] = [];
+          const empty: Transaction[] = [];
           index.set(indexValue, empty);
         }
         let arr = index.get(indexValue);
@@ -196,8 +202,8 @@ class TransactionGroupStrategy {
     );
   }
 
-  mapByDate(transactions: InternalTransaction[]): Map<string, InternalTransaction[]> {
-    let index_by_date_map: Map<string, InternalTransaction[]> = new Map();
+  mapByDate(transactions: Transaction[]): Map<string, Transaction[]> {
+    let index_by_date_map: Map<string, Transaction[]> = new Map();
     return transactions.reduce(
       (index, trx) => {
         if (trx === undefined || trx.date === undefined) {
@@ -205,7 +211,7 @@ class TransactionGroupStrategy {
         }
         const dateValue = trx.date;
         if (!index.has(dateValue)) {
-          const empty: InternalTransaction[] = [];
+          const empty: Transaction[] = [];
           index.set(dateValue, empty);
         }
         let arr = index.get(dateValue);
@@ -222,13 +228,6 @@ class TransactionGroupStrategy {
     return [];
   }
 
-  reduce(transactions: InternalTransaction[]): Transaction[] {
-    return transactions.map(t => {
-      var reduced = t;
-      delete reduced.tracked;
-      return ((reduced: any): Transaction);
-    });
-  }
 }
 
 function group(portfolio: Portfolio): TransactionGroup[] {

@@ -49,3 +49,8 @@ test('test bed and breakfast grouping', () => {
   const bnb = strategy.groupBedAndBreakfasting();
   expect(bnb.length).toBe(0);
 });
+
+test('test groupX', () => {
+  const strategy = new grouping.TransactionGroupStrategy(createTestPortfolio());
+  const bnb = strategy.groupX();
+});
