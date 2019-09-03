@@ -53,9 +53,11 @@ class TransactionGroupStrategy {
     let tracked = this.transactions.map(tr => tr.clone()).sort((a, b) => {
       const am = moment(a.date, 'YYYY-MM-DD');
       const bm = moment(b.date, 'YYYY-MM-DD')
-      if (moment(am).isBefore(bm)) return 1;
-      if (moment(am).isAfter(bm)) return -1;
-      return 0;
+      if (moment(am).isBefore(bm)) return -1;
+      if (moment(am).isAfter(bm)) return 1;
+      if (a.direction === b.direction) return 0;
+      if (a.direction === 'BUY') return -1;
+      else return 1;
     });
     var holdings: Map<string, Holding> = new Map();
     console.log(tracked);
