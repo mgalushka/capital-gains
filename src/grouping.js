@@ -47,7 +47,7 @@ class TransactionGroupStrategy {
   // Order transactions in ascending order by date
   // on every transaction compute:
   // if BUY - match against: 1. same day; 2. 30 days rule; 3 - add to holding
-  //
+  // if SELL - match against: 1. same day; 2. 30 days rule; 3 - match against holding and adjust holding correspondingly
   // remove matched transactions from transaction pool
   groupX(): TransactionGroup[] {
     let tracked = this.transactions.map(tr => tr.clone()).sort((a, b) => {
