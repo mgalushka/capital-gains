@@ -52,15 +52,34 @@ class TransactionGroupStrategy {
   groupX(): TransactionGroup[] {
     let tracked = this.transactions.map(tr => tr.clone()).sort((a, b) => {
       const am = moment(a.date, 'YYYY-MM-DD');
-      const bm = moment(b.date, 'YYYY-MM-DD')
+      const bm = moment(b.date, 'YYYY-MM-DD');
       if (moment(am).isBefore(bm)) return -1;
       if (moment(am).isAfter(bm)) return 1;
       if (a.direction === b.direction) return 0;
       if (a.direction === 'BUY') return -1;
       else return 1;
     });
+
+    // add unique identifier to every transaction to be able to distinguish
+    let counter = 0;
+    tracked = tracked.map(transaction => {
+      transaction.id = counter;
+      counter++;
+      return transaction;
+    });
+
+    const indexByDate = this.mapByIndex(tracked);
+
+    // all current holdings
     var holdings: Map<string, Holding> = new Map();
     console.log(tracked);
+
+    for (let i = 0; i < tracked.length; i++) {
+      const t = tracked[i];
+      // same day match
+      indexByDate.get(t.)
+    }
+
     return [];
   }
 

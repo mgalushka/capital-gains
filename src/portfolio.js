@@ -5,6 +5,7 @@ import type { Currency } from "./currency"
 type TransactionDirection = "BUY" | "SELL";
 
 type TransactionType = {
+  id: ?number,
   index: string,
   price: number,
   amount: number,
@@ -14,6 +15,7 @@ type TransactionType = {
 };
 
 class Transaction {
+  id: ?number;
   index: string;
   price: number;
   amount: number;
