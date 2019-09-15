@@ -150,6 +150,7 @@ class TransactionGroupStrategy {
     }
   }
 
+  // fetches transaction by its ID from transaction list
   transactionByID(transactions: Transaction[], id: number): ?Transaction {
     for (let i = 0; i < transactions.length; i++) {
       const currentTransaction = transactions[i];
@@ -160,6 +161,8 @@ class TransactionGroupStrategy {
     return null;
   }
 
+  // sorting function used to sort transactions
+  // in ascending order by transaction date
   asc(a: Transaction, b: Transaction): number {
     const am = moment(a.date, 'YYYY-MM-DD');
     const bm = moment(b.date, 'YYYY-MM-DD');
