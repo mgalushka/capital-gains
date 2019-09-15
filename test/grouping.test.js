@@ -15,6 +15,39 @@ createTestPortfolio = () => {
   return p;
 }
 
+createComplexPortfolio = () => {
+  const p = portfolio.newPortfolio();
+
+  // same day
+  p.add(portfolio.newTransaction(
+    'MSFT', 18, 1, 'USD', 'SELL', '2019-07-12',
+  ));
+  p.add(portfolio.newTransaction(
+    'MSFT', 17.9, 1, 'USD', 'BUY', '2019-07-12',
+  ));
+
+  // 30 days rule
+  p.add(portfolio.newTransaction(
+    'APPL', 15, 10, 'USD', 'BUY', '2019-01-01',
+  ));
+  p.add(portfolio.newTransaction(
+    'APPL', 16, 5, 'USD', 'SELL', '2019-08-01',
+  ));
+  p.add(portfolio.newTransaction(
+    'APPL', 17, 5, 'USD', 'BUY', '2019-08-17',
+  ));
+
+  // holding
+  p.add(portfolio.newTransaction(
+    'MSFT', 24, 12, 'USD', 'BUY', '2019-06-01',
+  )); // same day
+  p.add(portfolio.newTransaction(
+    'MSFT', 25, 12, 'USD', 'SELL', '2019-09-22',
+  ));
+
+  return p;
+}
+
 test('basic grouping', () => {
   expect(grouping.group(createTestPortfolio())).toEqual([]);
 });
@@ -51,6 +84,6 @@ test('test bed and breakfast grouping', () => {
 });
 
 test('test groupX', () => {
-  const strategy = new grouping.TransactionGroupStrategy(createTestPortfolio());
+  const strategy = new grouping.TransactionGroupStrategy(createComplexPortfolio());
   const bnb = strategy.groupX();
 });

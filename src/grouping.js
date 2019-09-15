@@ -90,13 +90,15 @@ class TransactionGroupStrategy {
 
     // all current holdings
     var holdings: Map<string, Holding> = new Map();
-    // console.log(tracked);
 
-    for (let i = 0; i < tracked.length; i++) {
-      const t = tracked[i];
-      // same day match
-      // indexByDate.get(t.)
-    }
+    var iterator = sortedIndexByDate.entries();
+    sortedIndexByDate.forEach((indexMap, date, map) => {
+      indexMap.forEach((transactions, index, mmap) => {
+        if (transactions.length >= 2) {
+          
+        }
+      });
+    });
 
     return [];
   }
