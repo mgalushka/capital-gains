@@ -50,15 +50,7 @@ class TransactionGroupStrategy {
   // if SELL - match against: 1. same day; 2. 30 days rule; 3 - match against holding and adjust holding correspondingly
   // remove matched transactions from transaction pool
   groupX(): TransactionGroup[] {
-    let tracked = this.transactions.map(tr => tr.clone()).sort((a, b) => {
-      const am = moment(a.date, 'YYYY-MM-DD');
-      const bm = moment(b.date, 'YYYY-MM-DD');
-      if (moment(am).isBefore(bm)) return -1;
-      if (moment(am).isAfter(bm)) return 1;
-      if (a.direction === b.direction) return 0;
-      if (a.direction === 'BUY') return -1;
-      else return 1;
-    });
+    let tracked = this.transactions.map(tr => tr.clone()).sort(this.asc);
 
     // add unique identifier to every transaction to be able to distinguish
     let counter = 0;
@@ -68,19 +60,55 @@ class TransactionGroupStrategy {
       return transaction;
     });
 
-    const indexByDate = this.mapByIndex(tracked);
+    const indexByDate = this.mapByDate(tracked);
+    var sortedIndexByDate: Map<string, Map<string, Transaction[]>> = new Map();
+    indexByDate.forEach((transactions: Transaction[], date: string, map) => {
+      let emptyTransactions: Map<string, Transaction[]> = new Map();
+      sortedIndexByDate.set(date, emptyTransactions);
+      const sortedTransactions = transactions.sort(this.asc);
+      sortedTransactions.forEach(transaction => {
+        let byDate = sortedIndexByDate.get(date);
+        if (byDate !== undefined) {
+          const index = transaction.index;
+          if (index !== undefined) {
+            if (!byDate.has(index)) {
+              let newTransactionsArr: Transaction[] = [];
+              newTransactionsArr.push(transaction);
+              byDate.set(index, newTransactionsArr);
+            } else {
+              let currentTransactions = byDate.get(index);
+              if (currentTransactions !== undefined) {
+                currentTransactions.push(transaction);
+              }
+            }
+          }
+        }
+      });
+    });
+
+    console.log(sortedIndexByDate);
 
     // all current holdings
     var holdings: Map<string, Holding> = new Map();
-    console.log(tracked);
+    // console.log(tracked);
 
     for (let i = 0; i < tracked.length; i++) {
       const t = tracked[i];
       // same day match
-      indexByDate.get(t.)
+      // indexByDate.get(t.)
     }
 
     return [];
+  }
+
+  asc(a: Transaction, b: Transaction): number {
+    const am = moment(a.date, 'YYYY-MM-DD');
+    const bm = moment(b.date, 'YYYY-MM-DD');
+    if (moment(am).isBefore(bm)) return -1;
+    if (moment(am).isAfter(bm)) return 1;
+    if (a.direction === b.direction) return 0;
+    if (a.direction === 'BUY') return -1;
+    else return 1;
   }
 
   groupSameDay(): TransactionGroup[] {
