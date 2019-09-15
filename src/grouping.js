@@ -50,15 +50,9 @@ class TransactionGroupStrategy {
   // if SELL - match against: 1. same day; 2. 30 days rule; 3 - match against holding and adjust holding correspondingly
   // remove matched transactions from transaction pool
   groupX(): TransactionGroup[] {
-    let tracked = this.transactions.map(tr => tr.clone()).sort(this.asc);
-
-    // add unique identifier to every transaction to be able to distinguish
-    let counter = 0;
-    tracked = tracked.map(transaction => {
-      transaction.id = counter;
-      counter++;
-      return transaction;
-    });
+    let tracked = this.track(
+      this.transactions.map(tr => tr.clone()).sort(this.asc),
+    );
 
     const indexByDate = this.mapByDate(tracked);
     var sortedIndexByDate: Map<string, Map<string, Transaction[]>> = new Map();
@@ -91,16 +85,65 @@ class TransactionGroupStrategy {
     // all current holdings
     var holdings: Map<string, Holding> = new Map();
 
-    var iterator = sortedIndexByDate.entries();
-    sortedIndexByDate.forEach((indexMap, date, map) => {
-      indexMap.forEach((transactions, index, mmap) => {
-        if (transactions.length >= 2) {
-          
+    for (let i = 0; i < tracked.length; i++) {
+      let currentTransaction = tracked[i];
+
+      // find same date
+      const id = currentTransaction.id;
+      const date = currentTransaction.date;
+      const index = currentTransaction.index;
+      if (sortedIndexByDate.has(date)) {
+        let indexMap = sortedIndexByDate.get(date);
+        if (indexMap.has(index)) {
+          let transactions = indexMap.get(index);
+          transactions.map(trx => {
+            if (trx.id !== id) {
+              if (trx.direction !== currentTransaction.direction) {
+                const amountMatched = Math.min(trx.amount, currentTransaction.amount);
+
+              }
+            }
+          });
         }
-      });
-    });
+      }
+    }
 
     return [];
+  }
+
+  // add unique identifier to every transaction to be able to distinguish
+  track(transactions: Transactions[]): Transactions[] {
+    let counter = 0;
+    return transactions.map(transaction => {
+      transaction.id = counter;
+      counter++;
+      return transaction;
+    });
+  }
+
+  // adjust amount for transaction with specific `id`
+  adjust(transactions: Transaction[], id: number, amount: number): void {
+    for (let i = 0; i < transactions.length; i++) {
+      let currentTransaction = transactions[i];
+      if (currentTransaction.id === id) {
+        if (currentTransaction.amount <= amount) {
+          transactions.splice(i, 1);
+          break;
+        } else {
+          currentTransaction.amount -= amount;
+        }
+      }
+    }
+  }
+
+  transactionByID(transactions: Transaction[], id: number): Transaction {
+    for (let i = 0; i < transactions.length; i++) {
+      const currentTransaction = transactions[i];
+      if (currentTransaction.id === id) {
+        return currentTransaction;
+      }
+    }
+    return undefined;
   }
 
   asc(a: Transaction, b: Transaction): number {

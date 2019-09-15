@@ -87,3 +87,34 @@ test('test groupX', () => {
   const strategy = new grouping.TransactionGroupStrategy(createComplexPortfolio());
   const bnb = strategy.groupX();
 });
+
+test('test tracking', () => {
+  const strategy = new grouping.TransactionGroupStrategy(createComplexPortfolio());
+  strategy.track(strategy.transactions);
+
+  // checking consecutive transaction ids
+  var id = 0;
+  strategy.transactions.map(trx => expect(trx.id).toBe(id++));
+});
+
+test('test adjusting', () => {
+  const strategy = new grouping.TransactionGroupStrategy(createComplexPortfolio());
+  let transactions = strategy.transactions;
+  strategy.track(transactions);
+
+  // adjusting transaction with id == 1 ('MSFT', 17.9, 1, 'USD', 'BUY', '2019-07-12')
+  // because its amount == 1 - this will remove transaction from the list
+  strategy.adjust(transactions, 1, 1);
+  var id = 0;
+  transactions.map(trx => {
+    // removed transaction #1
+    if (id === 1) return;
+    expect(trx.id).toBe(id++)
+  });
+
+  // adjusting transaction with id == 2 by 2 stocks ('APPL', 15, 10, 'USD', 'BUY', '2019-01-01')
+  // because its amount == 10 - this will adjust amount to 8 = 10 - 2
+  expect(strategy.transactionByID(transactions, 2).amount).toBe(10); // before adjustment
+  strategy.adjust(transactions, 2, 2);
+  expect(strategy.transactionByID(transactions, 2).amount).toBe(8);  // after adjustment
+});
