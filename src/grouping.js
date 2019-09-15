@@ -88,6 +88,7 @@ class TransactionGroupStrategy {
 
     for (let i = 0; i < tracked.length; i++) {
       let currentTransaction = tracked[i];
+      console.log(`Current transaction (${currentTransaction.id}) ${currentTransaction.index}:${currentTransaction.amount} @ ${currentTransaction.direction}`);
 
       // find same date
       const id = currentTransaction.id;
@@ -99,6 +100,7 @@ class TransactionGroupStrategy {
           let transactions = indexMap.get(index);
           if (transactions === undefined) continue;
           transactions.map(trx => {
+            console.log(`Internal iterating over (${trx.id}) ${trx.index}:${trx.amount} @ ${trx.direction}`);
             if (trx === undefined) return;
             if (trx.id !== id) {
               if (trx.direction !== currentTransaction.direction) {
@@ -109,10 +111,17 @@ class TransactionGroupStrategy {
                     type: "SAME_DAY",
                     groupMetadata: {date: date},
                 };
+                console.log(`Matching (${trx.id}) ${trx.amount} and (${currentTransaction.id}) ${currentTransaction.amount}`);
                 matches.push(group);
                 if (trx.id !== undefined && trx.id !== null && id !== undefined && id !== null) {
                   this.adjust(tracked, trx.id, amountMatched);
                   this.adjust(tracked, id, amountMatched);
+                  if (currentTransaction.amount === amountMatched) {
+                    return;
+                  }
+                  else {
+                    currentTransaction.amount -= amountMatched;
+                  }
                 }
               }
             }
@@ -142,10 +151,10 @@ class TransactionGroupStrategy {
       if (currentTransaction.id === id) {
         if (currentTransaction.amount <= amount) {
           transactions.splice(i, 1);
-          break;
         } else {
           currentTransaction.amount -= amount;
         }
+        break;
       }
     }
   }
