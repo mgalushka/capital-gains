@@ -50,6 +50,7 @@ class TransactionGroupStrategy {
   // if SELL - match against: 1. same day; 2. 30 days rule; 3 - match against holding and adjust holding correspondingly
   // remove matched transactions from transaction pool
   groupX(): TransactionGroup[] {
+    let matches: TransactionGroup[] = [];
     let tracked = this.track(
       this.transactions.map(tr => tr.clone()).sort(this.asc),
     );
@@ -94,13 +95,25 @@ class TransactionGroupStrategy {
       const index = currentTransaction.index;
       if (sortedIndexByDate.has(date)) {
         let indexMap = sortedIndexByDate.get(date);
-        if (indexMap.has(index)) {
+        if (indexMap !== undefined && indexMap.has(index)) {
           let transactions = indexMap.get(index);
+          if (transactions === undefined) continue;
           transactions.map(trx => {
+            if (trx === undefined) return;
             if (trx.id !== id) {
               if (trx.direction !== currentTransaction.direction) {
                 const amountMatched = Math.min(trx.amount, currentTransaction.amount);
-
+                const group = {
+                    index: index,
+                    transactions: [currentTransaction.clone(), trx.clone()],
+                    type: "SAME_DAY",
+                    groupMetadata: {date: date},
+                };
+                matches.push(group);
+                if (trx.id !== undefined && trx.id !== null && id !== undefined && id !== null) {
+                  this.adjust(tracked, trx.id, amountMatched);
+                  this.adjust(tracked, id, amountMatched);
+                }
               }
             }
           });
@@ -108,11 +121,12 @@ class TransactionGroupStrategy {
       }
     }
 
-    return [];
+    console.log(matches);
+    return matches;
   }
 
   // add unique identifier to every transaction to be able to distinguish
-  track(transactions: Transactions[]): Transactions[] {
+  track(transactions: Transaction[]): Transaction[] {
     let counter = 0;
     return transactions.map(transaction => {
       transaction.id = counter;
@@ -136,14 +150,14 @@ class TransactionGroupStrategy {
     }
   }
 
-  transactionByID(transactions: Transaction[], id: number): Transaction {
+  transactionByID(transactions: Transaction[], id: number): ?Transaction {
     for (let i = 0; i < transactions.length; i++) {
       const currentTransaction = transactions[i];
       if (currentTransaction.id === id) {
         return currentTransaction;
       }
     }
-    return undefined;
+    return null;
   }
 
   asc(a: Transaction, b: Transaction): number {
