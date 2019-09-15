@@ -50,12 +50,26 @@ class TransactionGroupStrategy {
   // if SELL - match against: 1. same day; 2. 30 days rule; 3 - match against holding and adjust holding correspondingly
   // remove matched transactions from transaction pool
   groupX(): TransactionGroup[] {
-    let matches: TransactionGroup[] = [];
+    let allMatches: TransactionGroup[] = [];
     let tracked = this.track(
       this.transactions.map(tr => tr.clone()).sort(this.asc),
     );
 
+    let first = true;
+    let match: TransactionGroup = null;
+    while (first || match !== null) {
+      match = this.groupOneIteration(tracked);
+      console.log(match);
+      allMatches.push(match);
+      first = false;
+    }
+    return allMatches;
+  }
+
+  groupOneIteration(tracked: Transaction[]): ?TransactionGroup {
     const indexByDate = this.mapByDate(tracked);
+    let group = null;
+
     var sortedIndexByDate: Map<string, Map<string, Transaction[]>> = new Map();
     indexByDate.forEach((transactions: Transaction[], date: string, map) => {
       let emptyTransactions: Map<string, Transaction[]> = new Map();
@@ -81,14 +95,14 @@ class TransactionGroupStrategy {
       });
     });
 
-    console.log(sortedIndexByDate);
+    // console.log(sortedIndexByDate);
 
     // all current holdings
     var holdings: Map<string, Holding> = new Map();
 
     for (let i = 0; i < tracked.length; i++) {
       let currentTransaction = tracked[i];
-      console.log(`Current transaction (${currentTransaction.id}) ${currentTransaction.index}:${currentTransaction.amount} @ ${currentTransaction.direction}`);
+      // console.log(`[${i}] Current transaction (${currentTransaction.id}) ${currentTransaction.index}:${currentTransaction.amount} @ ${currentTransaction.direction}`);
 
       // find same date
       const id = currentTransaction.id;
@@ -99,39 +113,42 @@ class TransactionGroupStrategy {
         if (indexMap !== undefined && indexMap.has(index)) {
           let transactions = indexMap.get(index);
           if (transactions === undefined) continue;
-          transactions.map(trx => {
-            console.log(`Internal iterating over (${trx.id}) ${trx.index}:${trx.amount} @ ${trx.direction}`);
-            if (trx === undefined) return;
+          for (let j = 0; j < transactions.length; j++) {
+            let trx = transactions[j];
+            // console.log(`Internal iterating over (${trx.id}) ${trx.index}:${trx.amount} @ ${trx.direction}`);
+            if (trx === undefined) continue;
             if (trx.id !== id) {
               if (trx.direction !== currentTransaction.direction) {
                 const amountMatched = Math.min(trx.amount, currentTransaction.amount);
-                const group = {
+                let currentClone = currentTransaction.clone();
+                currentClone.amount = amountMatched
+                let trxClone = trx.clone();
+                trxClone.amount = amountMatched
+
+                group = {
                     index: index,
-                    transactions: [currentTransaction.clone(), trx.clone()],
+                    transactions: [currentClone, trxClone],
                     type: "SAME_DAY",
                     groupMetadata: {date: date},
                 };
-                console.log(`Matching (${trx.id}) ${trx.amount} and (${currentTransaction.id}) ${currentTransaction.amount}`);
-                matches.push(group);
+                // console.log(`Matching (${trx.id}) ${trx.amount} and (${currentTransaction.id}) ${currentTransaction.amount}`);
                 if (trx.id !== undefined && trx.id !== null && id !== undefined && id !== null) {
                   this.adjust(tracked, trx.id, amountMatched);
                   this.adjust(tracked, id, amountMatched);
-                  if (currentTransaction.amount === amountMatched) {
-                    return;
-                  }
-                  else {
+                  // console.log(tracked);
+                  if (currentTransaction.amount !== amountMatched) {
                     currentTransaction.amount -= amountMatched;
                   }
                 }
+                return group;
               }
             }
-          });
+          }
         }
       }
     }
 
-    console.log(matches);
-    return matches;
+    return group;
   }
 
   // add unique identifier to every transaction to be able to distinguish
@@ -150,6 +167,7 @@ class TransactionGroupStrategy {
       let currentTransaction = transactions[i];
       if (currentTransaction.id === id) {
         if (currentTransaction.amount <= amount) {
+          // console.log(`Deleted transaction (${i}) ${currentTransaction.index}:${currentTransaction.amount} @ ${currentTransaction.direction}`);
           transactions.splice(i, 1);
         } else {
           currentTransaction.amount -= amount;
