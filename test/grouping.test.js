@@ -37,6 +37,20 @@ createComplexPortfolio = () => {
     'MSFT', 14, 3, 'USD', 'SELL', '2019-07-13',
   ));
 
+  // same day, multiple buys and sells
+  p.add(portfolio.newTransaction(
+    'MSFT', 1, 3, 'USD', 'BUY', '2019-07-14',
+  ));
+  p.add(portfolio.newTransaction(
+    'MSFT', 1, 4, 'USD', 'SELL', '2019-07-14',
+  ));
+  p.add(portfolio.newTransaction(
+    'MSFT', 1, 2, 'USD', 'BUY', '2019-07-14',
+  ));
+  p.add(portfolio.newTransaction(
+    'MSFT', 1, 1, 'USD', 'SELL', '2019-07-14',
+  ));
+
   // 30 days rule
   p.add(portfolio.newTransaction(
     'APPL', 15, 10, 'USD', 'BUY', '2019-01-01',
