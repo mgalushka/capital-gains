@@ -1,4 +1,5 @@
-// @flow
+// @flow strict
+
 const moment = require("moment");
 import type { Portfolio, Transaction } from "./portfolio"
 
@@ -56,12 +57,14 @@ class TransactionGroupStrategy {
     );
 
     let first = true;
-    let match: TransactionGroup = null;
+    let match: ?TransactionGroup = null;
     while (first || match !== null) {
       match = this.groupOneIteration(tracked);
       console.log(match);
-      allMatches.push(match);
-      first = false;
+      if (match) {
+        allMatches.push(match);
+        first = false;
+      }
     }
     return allMatches;
   }
